@@ -26,7 +26,7 @@ data "aws_key_pair" "ssh_key" {
     name   = "key-pair-id"
     # IOTEMBSYS: Copy the keypair ID from the current AWS lab.
     # Note: this changes with every new Vocareum lab!
-    values = ["key-081527ae1e616f783"]
+    values = ["YOUR-KEY-HERE"]
   }
 }
 
@@ -34,25 +34,9 @@ resource "aws_security_group" "allow_all" {
   name        = "allow_all"
   description = "Allow all inbound traffic"
 
+  # IOTEMBSYS: limit ingress traffic to SSH and port 8080
   ingress {
-    description      = "SSH"
-    from_port        = 22
-    to_port          = 22
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-
-  ingress {
-    description      = "Inbound"
-    from_port        = 8080
-    to_port          = 8080
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-
-  egress {
+    description      = "All traffic"
     from_port        = 0
     to_port          = 0
     protocol         = "-1"
@@ -76,8 +60,7 @@ resource "aws_instance" "app_server" {
   }
 }
 
-# Show details from applying
-output "instance_public_ip" {
-    value = aws_instance.app_server.public_ip
-    description = "AWS EC2 Instance Public IP"
-}
+# IOTEMBSYS: Create an output target that prints the instance public IP.
+# output "instance_public_ip" {
+#    
+# }
