@@ -30,30 +30,17 @@ data "aws_key_pair" "ssh_key" {
   }
 }
 
-resource "aws_security_group" "allow_all" {
-  name        = "allow_all"
-  description = "Allow all inbound traffic"
-
-  # IOTEMBSYS: limit ingress traffic to SSH and port 8080
-  ingress {
-    description      = "All traffic"
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-
-  tags = {
-    Name = "allow_all"
-  }
-}
+# IOTEMBSYS: create a security group that limits ingress traffic to SSH and port 8080
+# resource "aws_security_group" "allow_ssh_and_tcp" {
+#
+# }
 
 resource "aws_instance" "app_server" {
   ami           = "ami-0557a15b87f6559cf"
   instance_type = "t2.micro"
   key_name      = "vockey"
-  vpc_security_group_ids = [aws_security_group.allow_all.id]
+  # IOTEMBSYS: set the security group here, once created
+  # vpc_security_group_ids = [aws_security_group.allow_ssh_and_tcp.id]
 
   tags = {
     Name = "AppServerInstance"
