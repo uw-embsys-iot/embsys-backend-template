@@ -26,7 +26,8 @@ data "aws_key_pair" "ssh_key" {
     name   = "key-pair-id"
     # IOTEMBSYS: Copy the keypair ID from the current AWS lab.
     # Note: this changes with every new Vocareum lab!
-    values = ["key-081527ae1e616f783"]
+    # This can be found under the EC2 page, in the "Key Pairs" section.
+    values = ["key-06fb9f6f5fe337b27"]
   }
 }
 
@@ -45,8 +46,8 @@ resource "aws_security_group" "allow_all" {
 
   ingress {
     description      = "Inbound"
-    from_port        = 8080
-    to_port          = 8080
+    from_port        = 4242
+    to_port          = 4242
     protocol         = "tcp"
     cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
@@ -70,6 +71,24 @@ resource "aws_instance" "app_server" {
   instance_type = "t2.micro"
   key_name      = "vockey"
   vpc_security_group_ids = [aws_security_group.allow_all.id]
+
+  user_data = <<-EOL
+  #!/bin/bash -xe
+  python3 /home/ubuntu/server.py
+  EOL
+
+  # Copy the file to the server
+  provisioner "file" {
+    source = "server.py"
+    destination = "/home/ubuntu/server.py"
+
+    connection {
+      type     = "ssh"
+      user     = "ubuntu"
+      private_key = file("labsuser.pem")
+      host     = aws_instance.app_server.public_ip
+    }
+  }
 
   tags = {
     Name = "AppServerInstance"
