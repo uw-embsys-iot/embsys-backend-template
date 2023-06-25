@@ -53,6 +53,15 @@ resource "aws_security_group" "allow_all" {
     ipv6_cidr_blocks = ["::/0"]
   }
 
+  ingress {
+    description      = "Inbound HTTP"
+    from_port        = 8080
+    to_port          = 8080
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
   egress {
     from_port        = 0
     to_port          = 0
@@ -72,15 +81,30 @@ resource "aws_instance" "app_server" {
   key_name      = "vockey"
   vpc_security_group_ids = [aws_security_group.allow_all.id]
 
-  user_data = <<-EOL
-  #!/bin/bash -xe
-  python3 /home/ubuntu/server.py
-  EOL
+  # user_data = <<-EOL
+  # #!/bin/bash -xe
+  # python3 -m venv .venv
+  # source .venv/bin/activate
+  # pip install -r /home/ubuntu/requirements.txt
+  # python3 /home/ubuntu/http_server.py
+  # EOL
 
   # Copy the file to the server
   provisioner "file" {
-    source = "server.py"
-    destination = "/home/ubuntu/server.py"
+    source = "http_server.py"
+    destination = "/home/ubuntu/http_server.py"
+
+    connection {
+      type     = "ssh"
+      user     = "ubuntu"
+      private_key = file("labsuser.pem")
+      host     = aws_instance.app_server.public_ip
+    }
+  }
+
+  provisioner "file" {
+    source = "requirements.txt"
+    destination = "/home/ubuntu/requirements.txt"
 
     connection {
       type     = "ssh"
