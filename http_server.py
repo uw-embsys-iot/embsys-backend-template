@@ -9,17 +9,6 @@ def default():
 
 
 # IOTEMBSYS: Implement the GET and POST handlers (either as separate routes or a single one)
-latest_data = b''
-
-@app.route("/data", methods=['GET', 'POST'])
-def data():
-    global latest_data
-    if request.method == 'POST':
-        print(request.get_data())
-        latest_data = request.get_data()
-        return ''
-    else:
-        return latest_data.decode('ascii')
 
 
 if __name__ == '__main__':
