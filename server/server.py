@@ -15,10 +15,10 @@ def default():
 @app.route("/status_update", methods=['POST'])
 @fb(StatusUpdateRequest)
 def status_update():
-    print(request.get_data())
+    print(request.data)
 
     resp = StatusUpdateResponse()
-    resp.message = "Update received"
+    resp.message = "Boot count: " + str(request.data["bootCount"])
     return resp.SerializeToString()
 
 
