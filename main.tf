@@ -11,6 +11,9 @@ terraform {
 
 provider "aws" {
   region = "us-east-1"
+
+  # TODO: Remove when creating course content
+  profile = "skobovm"
 }
 
 # Note: if not accessing AWS through Vocareum, another SSH keypair
@@ -19,7 +22,7 @@ provider "aws" {
 # https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/create-key-pairs.html
 # https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AccessingInstances.html
 data "aws_key_pair" "ssh_key" {
-  key_name           = "vockey"
+  key_name           = "ec2_access"
   include_public_key = true
 
   filter {
@@ -27,7 +30,10 @@ data "aws_key_pair" "ssh_key" {
     # IOTEMBSYS: Copy the keypair ID from the current AWS lab.
     # Note: this changes with every new Vocareum lab!
     # This can be found under the EC2 page, in the "Key Pairs" section.
-    values = ["key-06fb9f6f5fe337b27"]
+    
+    # values = ["key-06fb9f6f5fe337b27"]
+    # TODO: remove the personal key when creating github classroom modules.
+    values = ["key-06c68812aa9271f80"]
   }
 }
 
@@ -62,6 +68,15 @@ resource "aws_security_group" "allow_all" {
     ipv6_cidr_blocks = ["::/0"]
   }
 
+  ingress {
+    description      = "Inbound HTTP"
+    from_port        = 80
+    to_port          = 80
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
   egress {
     from_port        = 0
     to_port          = 0
@@ -78,7 +93,9 @@ resource "aws_security_group" "allow_all" {
 resource "aws_instance" "app_server" {
   ami           = "ami-0557a15b87f6559cf"
   instance_type = "t2.micro"
-  key_name      = "vockey"
+  # TODO: Remove the personal key name
+  # key_name      = "vockey"
+  key_name      = "ec2_access"
   vpc_security_group_ids = [aws_security_group.allow_all.id]
 
   # user_data = <<-EOL
