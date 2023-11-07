@@ -37,6 +37,14 @@ data "aws_key_pair" "ssh_key" {
   }
 }
 
+# Note: If you're using a different key name or path, change the SSH key here.
+# You can also pass it in via command line like:
+# terraform apply -var="ssh_key_path=personal.pem"
+variable "ssh_key_path" {
+  type    = string
+  default = "labsuser.pem"
+}
+
 resource "aws_security_group" "allow_all" {
   name        = "allow_all"
   description = "Allow all inbound traffic"
@@ -99,15 +107,27 @@ resource "aws_instance" "app_server" {
   vpc_security_group_ids = [aws_security_group.allow_all.id]
 
   # TODO(mskobov): Install venv package and python/other packages
-  # user_data = <<-EOL
-  # #!/bin/bash -xe
-  # python3 -m venv .venv
-  # source .venv/bin/activate
-  # pip install -r /home/ubuntu/requirements.txt
-  # python3 /home/ubuntu/http_server.py
-  # EOL
+  # TODO(mskobov): Have separate user data for server/http/tcp
+  # TODO(mskobov): Clean up git checkout procedure (e.g. use "release" branch)
+  # TODO(mskobov): Use systemd to run python server instead of command
+  user_data = <<-EOL
+  #!/bin/bash -xe
+  sudo apt update
+  sudo apt install -y python3-venv
+  wget https://amazoncloudwatch-agent.s3.amazonaws.com/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
+  sudo dpkg -i -E ./amazon-cloudwatch-agent.deb
+  git clone https://github.com/kail/embsys-backend.git server
+  cd server
+  git fetch origin final
+  git checkout final
+  cd server
+  python3 -m venv .venv
+  source .venv/bin/activate
+  pip install -r requirements.txt
+  python3 server.py&
+  EOL
 
-  # Copy the file to the server
+  # Copy the HTTP test server file to the EC2 instance.
   provisioner "file" {
     source = "http_server.py"
     destination = "/home/ubuntu/http_server.py"
@@ -115,11 +135,12 @@ resource "aws_instance" "app_server" {
     connection {
       type     = "ssh"
       user     = "ubuntu"
-      private_key = file("labsuser.pem")
+      private_key = file(var.ssh_key_path)
       host     = aws_instance.app_server.public_ip
     }
   }
 
+  # Copies the python requirements to the EC2 instance.
   provisioner "file" {
     source = "requirements.txt"
     destination = "/home/ubuntu/requirements.txt"
@@ -127,7 +148,7 @@ resource "aws_instance" "app_server" {
     connection {
       type     = "ssh"
       user     = "ubuntu"
-      private_key = file("labsuser.pem")
+      private_key = file(var.ssh_key_path)
       host     = aws_instance.app_server.public_ip
     }
   }
