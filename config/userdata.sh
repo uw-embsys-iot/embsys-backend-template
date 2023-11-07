@@ -40,7 +40,7 @@ echo 'Done fetching repository'
 
 # Start graphite and grafana via docker compose
 sudo docker volume create --name=grafana-volume
-sudo docker-compose up -d
+sudo docker compose up -d
 
 # Install and run graphite
 # https://hub.docker.com/r/graphiteapp/graphite-statsd/
