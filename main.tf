@@ -45,6 +45,17 @@ variable "ssh_key_path" {
   default = "labsuser.pem"
 }
 
+locals {
+  userdata = templatefile("config/userdata.sh")
+}
+
+# resource "aws_ssm_parameter" "cw_agent" {
+#   description = "Cloudwatch agent config to configure custom log"
+#   name        = "/cloudwatch-agent/config"
+#   type        = "String"
+#   value       = file("config/cloudwatch_agent_conf.json")
+# }
+
 resource "aws_security_group" "allow_all" {
   name        = "allow_all"
   description = "Allow all inbound traffic"
@@ -98,6 +109,56 @@ resource "aws_security_group" "allow_all" {
   }
 }
 
+# If you'd like to add any other policies, do so here.
+locals {
+  role_policy_arns = [
+    "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+  ]
+}
+
+resource "aws_iam_instance_profile" "app_server_profile" {
+  name = "EC2-Profile"
+  role = aws_iam_role.app_server_role.name
+}
+
+resource "aws_iam_role_policy_attachment" "app_server_policy_attachment" {
+  count = length(local.role_policy_arns)
+
+  role       = aws_iam_role.app_server_role.name
+  policy_arn = element(local.role_policy_arns, count.index)
+}
+
+resource "aws_iam_role_policy" "app_server_policy" {
+  name = "EC2-Inline-Policy"
+  role = aws_iam_role.app_server_role.id
+  policy = jsonencode(
+    {
+      "Version" : "2012-10-17",
+      "Statement" : []
+    }
+  )
+}
+
+resource "aws_iam_role" "app_server_role" {
+  name = "EC2-Role"
+  path = "/"
+
+  assume_role_policy = jsonencode(
+    {
+      "Version" : "2012-10-17",
+      "Statement" : [
+        {
+          "Action" : "sts:AssumeRole",
+          "Principal" : {
+            "Service" : "ec2.amazonaws.com"
+          },
+          "Effect" : "Allow"
+        }
+      ]
+    }
+  )
+}
+
 resource "aws_instance" "app_server" {
   ami           = "ami-0557a15b87f6559cf"
   instance_type = "t2.micro"
@@ -105,27 +166,30 @@ resource "aws_instance" "app_server" {
   # key_name      = "vockey"
   key_name      = "ec2_access"
   vpc_security_group_ids = [aws_security_group.allow_all.id]
+  iam_instance_profile = aws_iam_instance_profile.app_server_profile.name
 
   # TODO(mskobov): Install venv package and python/other packages
   # TODO(mskobov): Have separate user data for server/http/tcp
   # TODO(mskobov): Clean up git checkout procedure (e.g. use "release" branch)
   # TODO(mskobov): Use systemd to run python server instead of command
-  user_data = <<-EOL
-  #!/bin/bash -xe
-  sudo apt update
-  sudo apt install -y python3-venv
-  wget https://amazoncloudwatch-agent.s3.amazonaws.com/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
-  sudo dpkg -i -E ./amazon-cloudwatch-agent.deb
-  git clone https://github.com/kail/embsys-backend.git server
-  cd server
-  git fetch origin final
-  git checkout final
-  cd server
-  python3 -m venv .venv
-  source .venv/bin/activate
-  pip install -r requirements.txt
-  python3 server.py&
-  EOL
+  user_data            = local.userdata
+
+  # user_data = <<-EOL
+  # #!/bin/bash -xe
+  # sudo apt update
+  # sudo apt install -y python3-venv
+  # wget https://amazoncloudwatch-agent.s3.amazonaws.com/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
+  # sudo dpkg -i -E ./amazon-cloudwatch-agent.deb
+  # git clone https://github.com/kail/embsys-backend.git server
+  # cd server
+  # git fetch origin final
+  # git checkout final
+  # cd server
+  # python3 -m venv .venv
+  # source .venv/bin/activate
+  # pip install -r requirements.txt
+  # python3 server.py&
+  # EOL
 
   # Copy the HTTP test server file to the EC2 instance.
   provisioner "file" {
