@@ -13,15 +13,23 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\tapi.proto\")\n\x13StatusUpdateRequest\x12\x12\n\nboot_count\x18\x01 \x01(\x05\"\'\n\x14StatusUpdateResponse\x12\x0f\n\x07message\x18\x01 \x01(\tb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\tapi.proto\"5\n\x08\x41ppStats\x12\r\n\x05ticks\x18\x01 \x01(\x05\x12\x1a\n\x12\x62utton_press_count\x18\x02 \x01(\x05\"p\n\x13StatusUpdateRequest\x12\x12\n\nboot_count\x18\x01 \x01(\x05\x12\x14\n\x0cuptime_ticks\x18\x02 \x01(\x03\x12\x11\n\trtc_clock\x18\x03 \x01(\x03\x12\x1c\n\tapp_stats\x18\n \x01(\x0b\x32\t.AppStats\"\'\n\x14StatusUpdateResponse\x12\x0f\n\x07message\x18\x01 \x01(\t\"=\n\x10OTAUpdateRequest\x12\x18\n\x05state\x18\x01 \x01(\x0e\x32\t.OTAState\x12\x0f\n\x07version\x18\x02 \x01(\t\"4\n\x11OTAUpdateResponse\x12\x11\n\tdo_update\x18\x01 \x01(\x08\x12\x0c\n\x04path\x18\x02 \x01(\t*\x82\x01\n\x08OTAState\x12\x12\n\x0eOTA_STATE_NONE\x10\x00\x12\x19\n\x15OTA_STATE_IN_PROGRESS\x10\x01\x12\x18\n\x14OTA_STATE_DOWNLOADED\x10\x02\x12\x17\n\x13OTA_STATE_PERSISTED\x10\x03\x12\x14\n\x10OTA_STATE_FAILED\x10\x04\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'api_pb2', _globals)
 if _descriptor._USE_C_DESCRIPTORS == False:
   DESCRIPTOR._options = None
-  _globals['_STATUSUPDATEREQUEST']._serialized_start=13
-  _globals['_STATUSUPDATEREQUEST']._serialized_end=54
-  _globals['_STATUSUPDATERESPONSE']._serialized_start=56
-  _globals['_STATUSUPDATERESPONSE']._serialized_end=95
+  _globals['_OTASTATE']._serialized_start=341
+  _globals['_OTASTATE']._serialized_end=471
+  _globals['_APPSTATS']._serialized_start=13
+  _globals['_APPSTATS']._serialized_end=66
+  _globals['_STATUSUPDATEREQUEST']._serialized_start=68
+  _globals['_STATUSUPDATEREQUEST']._serialized_end=180
+  _globals['_STATUSUPDATERESPONSE']._serialized_start=182
+  _globals['_STATUSUPDATERESPONSE']._serialized_end=221
+  _globals['_OTAUPDATEREQUEST']._serialized_start=223
+  _globals['_OTAUPDATEREQUEST']._serialized_end=284
+  _globals['_OTAUPDATERESPONSE']._serialized_start=286
+  _globals['_OTAUPDATERESPONSE']._serialized_end=338
 # @@protoc_insertion_point(module_scope)

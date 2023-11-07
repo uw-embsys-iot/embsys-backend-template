@@ -98,6 +98,7 @@ resource "aws_instance" "app_server" {
   key_name      = "ec2_access"
   vpc_security_group_ids = [aws_security_group.allow_all.id]
 
+  # TODO(mskobov): Install venv package and python/other packages
   # user_data = <<-EOL
   # #!/bin/bash -xe
   # python3 -m venv .venv
