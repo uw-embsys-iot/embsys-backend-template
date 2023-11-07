@@ -46,7 +46,7 @@ variable "ssh_key_path" {
 }
 
 locals {
-  userdata = templatefile("config/userdata.sh")
+  userdata = file("config/userdata.sh")
 }
 
 # resource "aws_ssm_parameter" "cw_agent" {
@@ -96,6 +96,15 @@ resource "aws_security_group" "allow_all" {
     ipv6_cidr_blocks = ["::/0"]
   }
 
+  ingress {
+    description      = "Grafana"
+    from_port        = 3000
+    to_port          = 3000
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
   egress {
     from_port        = 0
     to_port          = 0
@@ -134,7 +143,15 @@ resource "aws_iam_role_policy" "app_server_policy" {
   policy = jsonencode(
     {
       "Version" : "2012-10-17",
-      "Statement" : []
+      "Statement" : [
+        {
+          "Effect" : "Allow",
+          "Action" : [
+            "ssm:GetParameter"
+          ],
+          "Resource" : "*"
+        }
+      ]
     }
   )
 }
