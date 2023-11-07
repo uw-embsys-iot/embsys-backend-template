@@ -7,8 +7,8 @@ from idl.api_pb2 import OTAUpdateRequest, OTAUpdateResponse, StatusUpdateRequest
 import statsd
 
 # Create the statsd client
-server_stats = StatsClient("localhost", 8125)
-device_stats = StatsClient("localhost", 8125, prefix="device")
+server_stats = statsd.StatsClient("localhost", 8125)
+device_stats = statsd.StatsClient("localhost", 8125, prefix="device")
 
 app = Flask(__name__)
 fb = FlaskProtobuf(app, parse_dict=True)

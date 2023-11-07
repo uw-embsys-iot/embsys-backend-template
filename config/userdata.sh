@@ -40,7 +40,7 @@ echo 'Done fetching repository'
 
 # Start graphite and grafana via docker compose
 sudo docker volume create --name=grafana-volume
-sudo docker compose up -d
+sudo docker compose -f config/docker-compose.yml up -d
 
 # Install and run graphite
 # https://hub.docker.com/r/graphiteapp/graphite-statsd/
@@ -69,7 +69,7 @@ sudo docker compose up -d
 wget https://amazoncloudwatch-agent.s3.amazonaws.com/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
 sudo dpkg -i -E ./amazon-cloudwatch-agent.deb
 
-# Use cloudwatch config from SSM
+# Start the cloudwatch agent
 sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
 -a fetch-config \
 -m ec2 \
