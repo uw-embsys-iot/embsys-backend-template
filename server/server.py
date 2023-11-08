@@ -45,8 +45,8 @@ def ota():
     device_stats.incr(f"{device_id}.ota")
 
     resp = OTAUpdateResponse()
-    # TODO(mskobov): fill this path
-    resp.path = "/zephyr.signed.bin"
+    # This can be changed manually or through querying a datastore
+    resp.path = "/6fc74ad3bbc7699957685cf1a0805f006d3cb1ff.signed.bin"
     return resp.SerializeToString()
 
 
