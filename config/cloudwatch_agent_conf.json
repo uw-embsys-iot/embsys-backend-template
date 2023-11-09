@@ -16,4 +16,3 @@
       "aggregation_dimensions": [["InstanceId", "InstanceType"], ["InstanceId"]]
     }
   }
-  

@@ -4,5 +4,5 @@ terraform.tfstate
 terraform.tfstate.backup
 .venv/
 __pycache__/
-personal.pem
-personal.ppk
+*.pem
+*.ppk
