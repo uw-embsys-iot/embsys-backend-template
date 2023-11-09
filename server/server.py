@@ -46,6 +46,7 @@ def ota():
 
     resp = OTAUpdateResponse()
     # This can be changed manually or through querying a datastore
+    # You will want to check if the device already has the desired version!
     resp.path = "/6fc74ad3bbc7699957685cf1a0805f006d3cb1ff.signed.bin"
     return resp.SerializeToString()
 

@@ -12,12 +12,9 @@ sudo apt update -y
 # However, it's a good way to catch what's happening at startup. To do this,
 # SSH into the instance, and run "tail -f /var/log/user-data.log"
 # sudo apt upgrade -y
+
 sudo apt install -y python3-venv
 
-# There are other ways of installing, as well
-# https://nodejs.org/en/download/package-manager#debian-and-ubuntu-based-linux-distributions
-#sudo apt install -y nodejs
-#sudo apt install -y npm
 
 # Install docker
 sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
@@ -41,29 +38,6 @@ echo 'Done fetching repository'
 # Start graphite and grafana via docker compose
 sudo docker volume create --name=grafana-volume
 sudo docker compose -f config/docker-compose.yml up -d
-
-# Install and run graphite
-# https://hub.docker.com/r/graphiteapp/graphite-statsd/
-# sudo docker run -d \
-#  --name graphite \
-#  --restart=always \
-#  -p 80:80 \
-#  -p 2003-2004:2003-2004 \
-#  -p 2023-2024:2023-2024 \
-#  -p 8125:8125/udp \
-#  -p 8126:8126 \
-#  graphiteapp/graphite-statsd
-
-# Run grafana server
-# Note: instance must be restarted
-# Note the datasource must be set up manually: https://grafana.com/docs/grafana/latest/datasources/graphite/
-# TODO(mskobov): Figure out which services must be restarted for grafana to work
-# sudo docker run -d --name=grafana --restart=always -p 3000:3000 grafana/grafana
-
-# Start statsd server
-#git clone https://github.com/statsd/statsd.git /srv/statsd
-#node /srv/statsd/stats.js config/statsd_config.js&
-#echo 'Done starting statsd'
 
 # Configure Cloudwatch agent
 wget https://amazoncloudwatch-agent.s3.amazonaws.com/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb

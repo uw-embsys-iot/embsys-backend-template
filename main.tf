@@ -12,7 +12,8 @@ terraform {
 provider "aws" {
   region = "us-east-1"
 
-  # TODO: Remove when creating course content
+  # If you have your own AWS account, you can set up a profile
+  # using the AWS console and set it here.
   profile = "skobovm"
 }
 
@@ -30,9 +31,8 @@ data "aws_key_pair" "ssh_key" {
     # IOTEMBSYS: Copy the keypair ID from the current AWS lab.
     # Note: this changes with every new Vocareum lab!
     # This can be found under the EC2 page, in the "Key Pairs" section.
-    
-    # values = ["key-06fb9f6f5fe337b27"]
-    # TODO: remove the personal key when creating github classroom modules.
+
+    # WARNING: this is NOT your key; you need to change it
     values = ["key-06c68812aa9271f80"]
   }
 }
@@ -48,13 +48,6 @@ variable "ssh_key_path" {
 locals {
   userdata = file("config/userdata.sh")
 }
-
-# resource "aws_ssm_parameter" "cw_agent" {
-#   description = "Cloudwatch agent config to configure custom log"
-#   name        = "/cloudwatch-agent/config"
-#   type        = "String"
-#   value       = file("config/cloudwatch_agent_conf.json")
-# }
 
 resource "aws_security_group" "allow_all" {
   name        = "allow_all"
@@ -179,8 +172,6 @@ resource "aws_iam_role" "app_server_role" {
 resource "aws_instance" "app_server" {
   ami           = "ami-0557a15b87f6559cf"
   instance_type = "t2.micro"
-  # TODO: Remove the personal key name
-  # key_name      = "vockey"
   key_name      = "ec2_access"
   vpc_security_group_ids = [aws_security_group.allow_all.id]
   iam_instance_profile = aws_iam_instance_profile.app_server_profile.name
@@ -190,23 +181,6 @@ resource "aws_instance" "app_server" {
   # TODO(mskobov): Clean up git checkout procedure (e.g. use "release" branch)
   # TODO(mskobov): Use systemd to run python server instead of command
   user_data            = local.userdata
-
-  # user_data = <<-EOL
-  # #!/bin/bash -xe
-  # sudo apt update
-  # sudo apt install -y python3-venv
-  # wget https://amazoncloudwatch-agent.s3.amazonaws.com/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
-  # sudo dpkg -i -E ./amazon-cloudwatch-agent.deb
-  # git clone https://github.com/kail/embsys-backend.git server
-  # cd server
-  # git fetch origin final
-  # git checkout final
-  # cd server
-  # python3 -m venv .venv
-  # source .venv/bin/activate
-  # pip install -r requirements.txt
-  # python3 server.py&
-  # EOL
 
   # Copy the HTTP test server file to the EC2 instance.
   provisioner "file" {
