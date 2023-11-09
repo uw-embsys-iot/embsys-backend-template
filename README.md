@@ -1,2 +1,4 @@
-# embsys-backend
-Backend assignments for the UW IoT Embedded Systems Specialization
+# UW IOT Embsys Assignments
+Backend assignments for the UW Embedded Systems IoT Specialization
+
+## 
