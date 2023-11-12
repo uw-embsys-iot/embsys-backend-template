@@ -26,8 +26,5 @@ def status_update():
     return resp.SerializeToString()
 
 
-# IOTEMBSYS9: Add an /ota endpoint that returns the path or URL
-
-
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)

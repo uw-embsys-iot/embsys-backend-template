@@ -216,9 +216,6 @@ resource "aws_instance" "app_server" {
   }
 }
 
-# IOTEMBSYS9: Create a bucket with public read access. Look at the terraform
-# AWS provider documentation for details.
-
 # Show details from applying
 output "instance_public_ip" {
     value = aws_instance.app_server.public_ip
