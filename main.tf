@@ -218,39 +218,6 @@ resource "aws_instance" "app_server" {
 
 # IOTEMBSYS9: Create a bucket with public read access. Look at the terraform
 # AWS provider documentation for details.
-# Note: buckets need to be globally unique!
-# Note2: buckets shouldn't be publicly accessible, and should instead be
-# private, with the server generating pre-signed URLs to access the binaries.
-# That, however, is out of scope for this course.
-resource "aws_s3_bucket" "release_bucket" {
-  bucket = "skobovm-iotemb-firmware-releases"
-}
-
-resource "aws_s3_bucket_ownership_controls" "release_bucket" {
-  bucket = aws_s3_bucket.release_bucket.id
-  rule {
-    object_ownership = "BucketOwnerPreferred"
-  }
-}
-
-resource "aws_s3_bucket_public_access_block" "release_bucket" {
-  bucket = aws_s3_bucket.release_bucket.id
-
-  block_public_acls       = false
-  block_public_policy     = false
-  ignore_public_acls      = false
-  restrict_public_buckets = false
-}
-
-resource "aws_s3_bucket_acl" "release_bucket" {
-  depends_on = [
-    aws_s3_bucket_ownership_controls.release_bucket,
-    aws_s3_bucket_public_access_block.release_bucket,
-  ]
-
-  bucket = aws_s3_bucket.release_bucket.id
-  acl    = "public-read"
-}
 
 # Show details from applying
 output "instance_public_ip" {
