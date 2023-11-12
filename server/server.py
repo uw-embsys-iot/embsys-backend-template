@@ -6,7 +6,6 @@ from idl.api_pb2 import OTAUpdateRequest, OTAUpdateResponse, StatusUpdateRequest
 
 import statsd
 
-# IOTEMBSYS11: Create the statsd client (localhost port 8125)
 
 app = Flask(__name__)
 fb = FlaskProtobuf(app, parse_dict=True)
@@ -20,10 +19,7 @@ def default():
 @app.route("/status_update", methods=['POST'])
 @fb(StatusUpdateRequest)
 def status_update():
-    # IOTEMBSYS11: Add a stats counter for number of invocations
     print(request.data)
-    
-    # IOTEMBSYS11: Add a stats gauge for device metrics
 
     resp = StatusUpdateResponse()
     resp.message = "Boot count: " + str(request.data["bootCount"])
