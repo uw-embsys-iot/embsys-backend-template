@@ -216,6 +216,8 @@ resource "aws_instance" "app_server" {
   }
 }
 
+# IOTEMBSYS9: Create a bucket with public read access. Look at the terraform
+# AWS provider documentation for details.
 # Note: buckets need to be globally unique!
 # Note2: buckets shouldn't be publicly accessible, and should instead be
 # private, with the server generating pre-signed URLs to access the binaries.

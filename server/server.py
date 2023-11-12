@@ -26,6 +26,7 @@ def status_update():
     return resp.SerializeToString()
 
 
+# IOTEMBSYS9: Add an /ota endpoint that returns the path or URL
 @app.route("/ota", methods=['POST'])
 @fb(OTAUpdateRequest)
 def ota():
