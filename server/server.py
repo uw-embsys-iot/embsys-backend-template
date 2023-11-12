@@ -6,7 +6,7 @@ from idl.api_pb2 import OTAUpdateRequest, OTAUpdateResponse, StatusUpdateRequest
 
 import statsd
 
-# Create the statsd client
+# IOTEMBSYS11: Create the statsd client (localhost port 8125)
 server_stats = statsd.StatsClient("localhost", 8125)
 device_stats = statsd.StatsClient("localhost", 8125, prefix="device")
 
@@ -22,11 +22,12 @@ def default():
 @app.route("/status_update", methods=['POST'])
 @fb(StatusUpdateRequest)
 def status_update():
+    # IOTEMBSYS11: Add a stats counter for number of invocations
     server_stats.incr("status_update")
     print(request.data)
     device_id = request.data["deviceId"] if "deviceId" in request.data else "unknown"
     
-    # Record device stats
+    # IOTEMBSYS11: Add a stats gauge for device metrics
     device_stats.incr(f"{device_id}.status_update")
     device_stats.gauge(f"{device_id}.boot_count", request.data["bootCount"])
     device_stats.gauge(f"{device_id}.uptime_ticks", request.data["uptimeTicks"])
