@@ -31,16 +31,47 @@ data "aws_key_pair" "ssh_key" {
 }
 
 # IOTEMBSYS2: create a security group that limits ingress traffic to SSH and port 8080
-# resource "aws_security_group" "allow_ssh_and_tcp" {
-#
-# }
+resource "aws_security_group" "allow_all" {
+  name        = "allow_all"
+  description = "Allow all inbound traffic"
+
+  ingress {
+    description      = "SSH"
+    from_port        = 22
+    to_port          = 22
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  ingress {
+    description      = "Inbound"
+    from_port        = 8080
+    to_port          = 8080
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  tags = {
+    Name = "allow_all"
+  }
+}
 
 resource "aws_instance" "app_server" {
   ami           = "ami-0557a15b87f6559cf"
   instance_type = "t2.micro"
   key_name      = "vockey"
   # IOTEMBSYS2: set the security group here, once created
-  # vpc_security_group_ids = [aws_security_group.allow_ssh_and_tcp.id]
+  vpc_security_group_ids = [aws_security_group.allow_ssh_and_tcp.id]
 
   tags = {
     Name = "AppServerInstance"
@@ -48,6 +79,7 @@ resource "aws_instance" "app_server" {
 }
 
 # IOTEMBSYS2: Create an output target that prints the instance public IP.
-# output "instance_public_ip" {
-#    
-# }
+output "instance_public_ip" {
+    value = aws_instance.app_server.public_ip
+    description = "AWS EC2 Instance Public IP"
+}
