@@ -24,13 +24,13 @@ data "aws_key_pair" "ssh_key" {
 
   filter {
     name   = "key-pair-id"
-    # IOTEMBSYS: Copy the keypair ID from the current AWS lab.
+    # IOTEMBSYS2: Copy the keypair ID from the current AWS lab.
     # Note: this changes with every new Vocareum lab!
     values = ["YOUR-KEY-HERE"]
   }
 }
 
-# IOTEMBSYS: create a security group that limits ingress traffic to SSH and port 8080
+# IOTEMBSYS2: create a security group that limits ingress traffic to SSH and port 8080
 # resource "aws_security_group" "allow_ssh_and_tcp" {
 #
 # }
@@ -39,7 +39,7 @@ resource "aws_instance" "app_server" {
   ami           = "ami-0557a15b87f6559cf"
   instance_type = "t2.micro"
   key_name      = "vockey"
-  # IOTEMBSYS: set the security group here, once created
+  # IOTEMBSYS2: set the security group here, once created
   # vpc_security_group_ids = [aws_security_group.allow_ssh_and_tcp.id]
 
   tags = {
@@ -47,7 +47,7 @@ resource "aws_instance" "app_server" {
   }
 }
 
-# IOTEMBSYS: Create an output target that prints the instance public IP.
+# IOTEMBSYS2: Create an output target that prints the instance public IP.
 # output "instance_public_ip" {
 #    
 # }
