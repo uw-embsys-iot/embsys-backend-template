@@ -30,7 +30,7 @@ data "aws_key_pair" "ssh_key" {
   }
 }
 
-# IOTEMBSYS2: create a security group that limits ingress traffic to SSH and port 8080
+# IOTEMBSYS2: create a security group that limits ingress traffic to SSH
 # resource "aws_security_group" "allow_ssh_and_tcp" {
 #
 # }
@@ -40,7 +40,7 @@ resource "aws_instance" "app_server" {
   instance_type = "t2.micro"
   key_name      = "vockey"
   # IOTEMBSYS2: set the security group here, once created
-  # vpc_security_group_ids = [aws_security_group.allow_ssh_and_tcp.id]
+  
 
   tags = {
     Name = "AppServerInstance"
@@ -48,6 +48,4 @@ resource "aws_instance" "app_server" {
 }
 
 # IOTEMBSYS2: Create an output target that prints the instance public IP.
-# output "instance_public_ip" {
-#    
-# }
+
